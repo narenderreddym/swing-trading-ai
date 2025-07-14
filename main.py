@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from src.backtester import Backtester
 
 def analyze_stock(symbol: str, save_path: Path) -> None:
     """Analyze a stock and save the results"""
@@ -171,17 +172,42 @@ def create_analysis_chart(symbol: str, technical_data: dict, save_path: Path):
     chart_path = save_path / f"{symbol}_chart_{datetime.now().strftime('%Y%m%d')}.html"
     fig.write_html(str(chart_path))
 
+# def main():
+#     if len(sys.argv) < 2:
+#         print("Please provide at least one stock symbol")
+#         print("Usage: python main.py SYMBOL1 [SYMBOL2 SYMBOL3 ...]")
+#         sys.exit(1)
+    
+#     # Create output directory
+#     output_dir = Path("output") / datetime.now().strftime("%Y%m%d")
+#     output_dir.mkdir(parents=True, exist_ok=True)
+    
+#     # Analyze each symbol
+#     for symbol in sys.argv[1:]:
+#         analyze_stock(symbol.upper(), output_dir)
 def main():
     if len(sys.argv) < 2:
-        print("Please provide at least one stock symbol")
-        print("Usage: python main.py SYMBOL1 [SYMBOL2 SYMBOL3 ...]")
+        print("Usage:")
+        print("  ▶ python main.py SYMBOL1 [SYMBOL2 ...]")
+        print("  ▶ python main.py --backtest SYMBOL [LOOKBACK_DAYS]")
         sys.exit(1)
-    
-    # Create output directory
+
+    # Handle Backtest Mode
+    if sys.argv[1] == "--backtest":
+        if len(sys.argv) < 3:
+            print("❌ Please provide a stock symbol to backtest.")
+            sys.exit(1)
+        symbol = sys.argv[2].upper()
+        lookback_days = int(sys.argv[3]) if len(sys.argv) > 3 else 60
+        print(f"\n🚀 Running backtest for {symbol} over last {lookback_days} days...")
+        backtester = Backtester(symbol=symbol, lookback_days=lookback_days)
+        backtester.run()
+        return
+
+    # Normal Analysis Mode
     output_dir = Path("output") / datetime.now().strftime("%Y%m%d")
     output_dir.mkdir(parents=True, exist_ok=True)
-    
-    # Analyze each symbol
+
     for symbol in sys.argv[1:]:
         analyze_stock(symbol.upper(), output_dir)
 

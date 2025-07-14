@@ -1,8 +1,8 @@
 import yfinance as yf
 import pandas as pd
 from typing import List, Dict
-from scripts.analyzer import Analyzer
-from scripts.data_fetcher import DataFetcher
+from src.analyzer import Analyzer
+from src.data_fetcher import DataFetcher
 import matplotlib.pyplot as plt
 
 class Backtester:
